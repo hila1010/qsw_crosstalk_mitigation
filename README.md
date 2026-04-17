@@ -26,7 +26,7 @@ Docker ensures all dependencies and environments are properly set up.
 ```sh
 docker build -t quantum_experiment .
 ```
-#### **Step 2: Run the experiment with default settings**
+#### **Step 2: Run the experiment with default settings or set parameters (use --rm only if you want to delete the container right after the calculations)**
 ```sh
 docker run --rm -it quantum_expeirment .
 ```
