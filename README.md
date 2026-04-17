@@ -28,25 +28,8 @@ docker build -t quantum_experiment .
 ```
 #### **Step 2: Run the experiment with default settings**
 ```sh
-docker run --rm quantum_expeirment .
+docker run --rm -it quantum_expeirment .
 ```
 
-#### **Step 3: Run the experiment parameters dynamically**
-```sh
-docker run --rm quantum_experiment \
-    --name MyExperiment \
-    --crosstalk_version cxneighbors \
-    --crosstalk_fidelity 0.95 \
-    --neighbor_fidelity 0.999 \
-    --connectivity_density 0.02 0.05 0.1 \
-    --opt_level 2 \
-    --rows 6 \
-    --cols 5 \
-    --directory circuits
-    
-These parameters have restricted options:
---opt_level: 0, 1, 2, 3
---crosstalk_version cxneighbors, ncx, topology
+#### **Step 3: Set parameter (guided)**
 
-
-```
