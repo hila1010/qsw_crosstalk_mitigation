@@ -345,44 +345,37 @@ class RunExperiments:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="TWiDDle: Run Quantum Experiments with Crosstalk Noise and Mitigation"
-                                                     "techniques")
+    parser = argparse.ArgumentParser(
+        description="TWiDDle: Run Quantum Experiments with Crosstalk Noise and Mitigation techniques"
+    )
 
-    default_connectivity_density = [0.01]
-    connectivity_density = [0.013895, 0.015, 0.018, 0.02, 0.025, 0.03, 0.035, 0.04, 0.045, 0.05, 0.1, 0.15, 0.2, 0.25,
-                            0.3, 0.35, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-    default_gate_set = ['id', 'rz', 'sx', 'x', 'cx', 'swap', 'cz']
-    default_crosstalk_fidelity = 0.98847
-    default_neighbor_fidelity = 0.9997285
-    default_opt_level = 0
-    default_rows, default_cols = 6, 4
-    default_directory = "circuits"
-    default_crosstalk_version = "cxneighbors"
+    parser.add_argument("--experiment-name", default="Exp")
+    parser.add_argument("--crosstalk-version", default="cxneighbors", choices=["cxneighbors", "ncx", "topology"])
+    parser.add_argument("--crosstalk-fidelity", type=float, default=0.98847)
+    parser.add_argument("--neighbor-fidelity", type=float, default=0.9997285)
+    parser.add_argument("--opt-level", type=int, default=0, choices=[0, 1, 2, 3])
+    parser.add_argument("--rows", type=int, default=6)
+    parser.add_argument("--cols", type=int, default=4)
+    parser.add_argument("--directory", default="circuits")
+    parser.add_argument("--connectivity-density", type=float, nargs="*", default=[0.01])
 
-    # Ask user for values interactively
-    experiment_name = input(f"Enter experiment name (default: Exp): ") or "Exp"
-    crosstalk_version = input(f"Enter crosstalk version [cxneighbors/ncx/topology] (default: {default_crosstalk_version}): ") or default_crosstalk_version
-    crosstalk_fidelity = float(input(f"Enter crosstalk fidelity (default: {default_crosstalk_fidelity}): ") or default_crosstalk_fidelity)
-    neighbor_fidelity = float(input(f"Enter neighbor fidelity (default: {default_neighbor_fidelity}): ") or default_neighbor_fidelity)
-    opt_level = int(input(f"Enter optimization level [0-3] (default: {default_opt_level}): ") or default_opt_level)
-    rows = int(input(f"Enter number of rows for coupling map (default: {default_rows}): ") or default_rows)
-    cols = int(input(f"Enter number of columns for coupling map (default: {default_cols}): ") or default_cols)
-    directory = input(f"Enter directory containing QASM circuits (default: {default_directory}): ") or default_directory
-
-    # Convert input to list if multiple values are provided
-    conn_density_input = input(f"Enter connectivity density values separated by space (default: {default_connectivity_density}): ")
-    connectivity_density = [float(x) for x in conn_density_input.split()] if conn_density_input else default_connectivity_density
+    args = parser.parse_args()
 
     backend = AerSimulator()
-    coupling_map = create_heavy_hex_IBMQ(rows, cols)
+    coupling_map = create_heavy_hex_IBMQ(args.rows, args.cols)
 
-    exp = RunExperiments(experiment_name, backend, crosstalk_version, crosstalk_fidelity,
-                         neighbor_fidelity, connectivity_density, opt_level,
-                         coupling_map, directory, default_gate_set)
+    exp = RunExperiments(
+        args.experiment_name,
+        backend,
+        args.crosstalk_version,
+        args.crosstalk_fidelity,
+        args.neighbor_fidelity,
+        args.connectivity_density,
+        args.opt_level,
+        coupling_map,
+        args.directory,
+        ['id', 'rz', 'sx', 'x', 'cx', 'swap', 'cz']
+    )
 
-    filename = f"{experiment_name}_hhex_{rows}_{cols}_opt{opt_level}_runs"
+    filename = f"{args.experiment_name}_hhex_{args.rows}_{args.cols}_opt{args.opt_level}_runs"
     exp.run_experiment(filename)
-
-
-if __name__ == "__main__":
-    main()
